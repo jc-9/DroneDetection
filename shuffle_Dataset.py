@@ -52,6 +52,17 @@ def get_extension(filename):
     return filename.split('.')[-1]
 
 
+def change_extension_and_check(filepath):
+    extensions = ['.PNG','.png','.jpg','.JPG','.JPEG']
+    for ext in extensions:
+        img_file = filepath.replace('.txt', ext)
+        if os.path.isfile(img_file):
+            return img_file
+        else:
+            continue
+    print(f'File Extension Not Found:{extensions}')
+
+
 def generate_structure(file_list, folder):
     global train_split, files, train_list, val_list
     yolo_folder_structure = ['images/train', 'images/val', 'labels/train', 'labels/val']
@@ -62,13 +73,15 @@ def generate_structure(file_list, folder):
     n_files = files_shuffled.shape[0]
     train_list = files_shuffled[0:int(train_split * n_files)]
     val_list = files_shuffled[int(train_split * n_files):]
-    for i in train_list:
-        move_file(i, os.path.join(folder, yolo_folder_structure[2]))
-        img_file = i.replace('.txt', '.PNG')
+    for traindata in train_list:
+        move_file(traindata, os.path.join(folder, yolo_folder_structure[2]))
+        img_file = change_extension_and_check(traindata)
+        # img_file = i.replace('.txt', '.PNG')
         move_file(img_file, os.path.join(folder, yolo_folder_structure[0]))
     for valdata in val_list:
         move_file(valdata, os.path.join(folder, yolo_folder_structure[3]))
-        img_file = valdata.replace('.txt', '.PNG')
+        # img_file = valdata.replace('.txt', '.PNG')
+        img_file = change_extension_and_check(valdata)
         move_file(img_file, os.path.join(folder, yolo_folder_structure[1]))
 
 
@@ -127,7 +140,7 @@ def check_directory_structure(root_dir, expected_structure):
 
 
 shuffle_list = [
-'/home/justin/PycharmProjects/Assembly_Assist_Project/data/4.CombinedDatasets/ievfd/v21'
+'/home/justin/PycharmProjects/DroneDetection/data/drone_dataset2 (Copy)'
 ]
 
 
