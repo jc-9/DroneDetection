@@ -88,6 +88,46 @@ def transform(img, boxes):
     id = img_transformed_dict['label_fields']
     return img, boxes, id
 
+def yolo_to_crosshair(img, bbox, sub_line_length=10):
+    """
+    Convert YOLO bounding box format to a crosshair shape on the image.
+
+    Parameters:
+    img: The input image (numpy array).
+    bbox: The bounding box in YOLO format [x_center, y_center, width, height] (relative to image size).
+    """
+    img_height, img_width = img.shape[:2]
+    for box in bbox:
+        # Extract YOLO format bounding box
+        _,x_center_rel, y_center_rel, width_rel, height_rel = box
+
+        # Convert YOLO format to pixel coordinates
+        x_center = int(x_center_rel * img_width)
+        y_center = int(y_center_rel * img_height)
+        box_width = int(width_rel * img_width)
+        box_height = int(height_rel * img_height)
+
+        # Calculate bounding box corners
+        x_min = x_center - box_width // 2
+        x_max = x_center + box_width // 2
+        y_min = y_center - box_height // 2
+        y_max = y_center + box_height // 2
+
+        # Draw vertical line (crosshair)
+        cv2.line(img, (x_center, y_min), (x_center, y_max), (0, 0, 255), 2)
+
+        # Draw horizontal line (crosshair)
+        cv2.line(img, (x_min, y_center), (x_max, y_center), (0, 0, 255), 2)
+        # Vertical sub-crosshairs
+        cv2.line(img, (x_center - sub_line_length, y_min), (x_center + sub_line_length, y_min), (0, 255, 0), 2)  # Top
+        cv2.line(img, (x_center - sub_line_length, y_max), (x_center + sub_line_length, y_max), (0, 255, 0),
+                 2)  # Bottom
+
+        # Horizontal sub-crosshairs
+        cv2.line(img, (x_min, y_center - sub_line_length), (x_min, y_center + sub_line_length), (0, 255, 0), 2)  # Left
+        cv2.line(img, (x_max, y_center - sub_line_length), (x_max, y_center + sub_line_length), (0, 255, 0), 2)  # Right
+
+    # return img
 
 def display_images_with_bboxes(image_folder, annotation_folder):
     global boxes
@@ -108,7 +148,8 @@ def display_images_with_bboxes(image_folder, annotation_folder):
             if os.path.exists(annotation_path):
                 boxes = load_yolo_annotations(annotation_path)
 
-            draw_bounding_boxes(img, boxes)
+            # draw_bounding_boxes(img, boxes)
+            yolo_to_crosshair(img,boxes)
             transform_flag = False
             if transform_flag:
                 img_transformed, boxes, classid = transform(img, boxes)
@@ -128,8 +169,8 @@ def display_images_with_bboxes(image_folder, annotation_folder):
 
 
 # Define the paths to your dataset
-image_folder = '/home/justin/kalvoai/datasets/drone/ds1/dataset_txt/images/train'
-annotation_folder = '/home/justin/kalvoai/datasets/drone/ds1/dataset_txt/labels/train'
+image_folder = '/home/justin/PycharmProjects/DroneDetection/data/ds1/dataset_txt/images/train'
+annotation_folder = '/home/justin/PycharmProjects/DroneDetection/data/ds1/dataset_txt/labels/train'
 
 # Run the script
 display_images_with_bboxes(image_folder, annotation_folder)

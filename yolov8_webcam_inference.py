@@ -160,6 +160,48 @@ def single_draw_box(results):
     return frame
 
 
+def yolo_to_crosshair(img, bbox, sub_line_length=10):
+    """
+    Convert YOLO bounding box format to a crosshair shape on the image.
+
+    Parameters:
+    img: The input image (numpy array).
+    bbox: The bounding box in YOLO format [x_center, y_center, width, height] (relative to image size).
+    """
+    img_height, img_width = img.shape[:2]
+    for box in bbox:
+        # Extract YOLO format bounding box
+        x_center, y_center, box_width, box_height = box.xywh[0]
+
+        # Convert YOLO format to pixel coordinates
+        x_center = int(x_center)
+        y_center = int(y_center)
+        # box_width = int(width_rel * img_width)
+        # box_height = int(height_rel * img_height)
+
+        # Calculate bounding box corners
+        x_min = int(x_center - box_width // 2)
+        x_max = int(x_center + box_width // 2)
+        y_min = int(y_center - box_height // 2)
+        y_max = int(y_center + box_height // 2)
+
+        # Draw vertical line (crosshair)
+        cv2.line(img, (x_center, y_min), (x_center, y_max), (0, 0, 255), 2)
+
+        # Draw horizontal line (crosshair)
+        cv2.line(img, (x_min, y_center), (x_max, y_center), (0, 0, 255), 2)
+        # Vertical sub-crosshairs
+        cv2.line(img, (x_center - sub_line_length, y_min), (x_center + sub_line_length, y_min), (0, 255, 0), 2)  # Top
+        cv2.line(img, (x_center - sub_line_length, y_max), (x_center + sub_line_length, y_max), (0, 255, 0),
+                 2)  # Bottom
+
+        # Horizontal sub-crosshairs
+        cv2.line(img, (x_min, y_center - sub_line_length), (x_min, y_center + sub_line_length), (0, 255, 0), 2)  # Left
+        cv2.line(img, (x_max, y_center - sub_line_length), (x_max, y_center + sub_line_length), (0, 255, 0), 2)  # Right
+
+    return img
+
+
 def main(camnum, weights_path: str, write_flag: bool):
     global results
     calibrate_camera = False
@@ -209,7 +251,8 @@ def main(camnum, weights_path: str, write_flag: bool):
         #         x, y, w, h = roi
         #         frame = dst[y:y + h, x:x + w]
         results = model(frame, conf=0.6, verbose=False)
-        annotated_frame = results[0].plot()
+        annotated_frame = yolo_to_crosshair(frame,results[0].boxes)
+        # annotated_frame = results[0].plot()
         cv2.imshow('Webcam Object Detection', annotated_frame)
         # if write_video:
         #     outmp4.write(annotated_frame)
@@ -221,7 +264,7 @@ def main(camnum, weights_path: str, write_flag: bool):
 
 
 if __name__ == '__main__':
-    cameraNumber = '/home/justin/kalvoai/drone_flying_test_video.m4v'
+    cameraNumber = '/home/justin/Videos/Screencasts/Screencast from 2024-10-01 14-04-50.webm'
     weights_path = '/home/justin/PycharmProjects/DroneDetection/data/drone_test_results_09_30_242/weights/best.pt'
     write_video_flag = False
     main(cameraNumber, weights_path, write_video_flag)
