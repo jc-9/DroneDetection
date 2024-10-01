@@ -128,8 +128,8 @@ def display_images_with_bboxes(image_folder, annotation_folder):
 
 
 # Define the paths to your dataset
-image_folder = '/home/justin/PycharmProjects/DroneDetection/data/drone_db1 (Copy)/images/train'
-annotation_folder = '/home/justin/PycharmProjects/DroneDetection/data/drone_db1 (Copy)/labels/train'
+image_folder = '/home/justin/kalvoai/datasets/drone/ds1/dataset_txt/images/train'
+annotation_folder = '/home/justin/kalvoai/datasets/drone/ds1/dataset_txt/labels/train'
 
 # Run the script
 display_images_with_bboxes(image_folder, annotation_folder)

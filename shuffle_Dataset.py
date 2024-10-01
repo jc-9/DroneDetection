@@ -140,7 +140,7 @@ def check_directory_structure(root_dir, expected_structure):
 
 
 shuffle_list = [
-'/home/justin/PycharmProjects/DroneDetection/data/drone_dataset2 (Copy)'
+"/home/justin/kalvoai/datasets/drone/ds1/dataset_txt"
 ]
 
 
