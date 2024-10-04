@@ -1,6 +1,6 @@
 """
 Justin Clay
-ACD Drone Detection Demo
+ACS Drone Detection Demo
 """
 
 from ultralytics import YOLO
@@ -122,6 +122,6 @@ def main(camnum, weights_path: str):
 
 
 if __name__ == '__main__':
-    cameraNumber = '/home/justin/kalvoai/drone_flying_test_video.m4v'
-    weights_path = '/home/justin/PycharmProjects/DroneDetection/data/drone_test_results_09_30_242/weights/best.pt'
+    cameraNumber = '/Users/justinclay/Desktop/drone fly up.m4v'
+    weights_path = '/Volumes/KalvoAI/best.pt'
     main(cameraNumber, weights_path)
